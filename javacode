@@ -1,0 +1,125 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+class Student {
+    private String name;
+    private Map<String, Double> grades;
+
+    public Student(String name) {
+        this.name = name;
+        this.grades = new HashMap<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addGrade(String subject, double grade) {
+        grades.put(subject, grade);
+    }
+
+    public void removeGrade(String subject) {
+        grades.remove(subject);
+    }
+
+    public double calculateGPA() {
+        if (grades.isEmpty()) {
+            return 0.0;
+        }
+
+        double totalGradePoints = 0.0;
+        int numSubjects = 0;
+
+        for (double grade : grades.values()) {
+            totalGradePoints += grade;
+            numSubjects++;
+        }
+
+        return totalGradePoints / numSubjects;
+    }
+
+    public void displayGrades() {
+        System.out.println("Grades for " + name + ":");
+        for (Map.Entry<String, Double> entry : grades.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+}
+
+public class StudentRecordsManager {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Student> students = new ArrayList<>();
+
+        while (true) {
+            System.out.println("\n1. Add Student\n2. Remove Student\n3. Record Grades\n4. Calculate GPA\n5. Generate Report\n6. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter student name: ");
+                    String studentName = scanner.next();
+                    students.add(new Student(studentName));
+                    System.out.println("Student added successfully.");
+                    break;
+                case 2:
+                    System.out.print("Enter student name to remove: ");
+                    String nameToRemove = scanner.next();
+                    students.removeIf(student -> student.getName().equals(nameToRemove));
+                    System.out.println("Student removed successfully.");
+                    break;
+                case 3:
+                    System.out.print("Enter student name: ");
+                    String nameToAddGrade = scanner.next();
+                    Student studentToAddGrade = getStudentByName(students, nameToAddGrade);
+                    if (studentToAddGrade != null) {
+                        System.out.print("Enter subject: ");
+                        String subject = scanner.next();
+                        System.out.print("Enter grade: ");
+                        double grade = scanner.nextDouble();
+                        studentToAddGrade.addGrade(subject, grade);
+                        System.out.println("Grade recorded successfully.");
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+                case 4:
+                    System.out.print("Enter student name: ");
+                    String nameToCalculateGPA = scanner.next();
+                    Student studentToCalculateGPA = getStudentByName(students, nameToCalculateGPA);
+                    if (studentToCalculateGPA != null) {
+                        System.out.println("GPA: " + studentToCalculateGPA.calculateGPA());
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+                case 5:
+                    for (Student student : students) {
+                        System.out.println("Student: " + student.getName());
+                        student.displayGrades();
+                        System.out.println();
+                    }
+                    break;
+                case 6:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 6.");
+            }
+        }
+    }
+
+    private static Student getStudentByName(List<Student> students, String name) {
+        for (Student student : students) {
+            if (student.getName().equals(name)) {
+                return student;
+            }
+        }
+        return null;
+    }
+}
